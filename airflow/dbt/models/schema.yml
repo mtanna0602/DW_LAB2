@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: raw_data                # Name used in DBT for this source
+    schema: raw_data              # Snowflake schema where the source table is located
+    database: DEV                 # Snowflake database name (update if different)
+    tables:
+      - name: stock_data          # Table that holds the raw stock data
+        description: "Raw stock data fetched from external sources (e.g., Alpha Vantage)."
+
+models:
+  - name: raw_data_model
+    description: "Model that uses the stock_data source to create a raw data model."
+    columns:
+      - name: date
+        description: "The date for the stock price data."
+      - name: symbol
+        description: "The stock symbol (e.g., AAPL, MSFT)."
+      - name: open
+        description: "Opening price of the stock for the day."
+      - name: max_value
+        description: "Maximum price of the stock for the day."
+      - name: min_value
+        description: "Minimum price of the stock for the day."
+      - name: close
+        description: "Closing price of the stock for the day."
+      - name: volume
+        description: "Volume of stock traded on that day."
+
+  - name: transformations
+    description: "Model that performs transformations such as Moving Average and RSI."
+    columns:
+      - name: date
+        description: "Date of the stock data."
+        tests:
+          - not_null
+      - name: symbol
+        description: "Stock symbol (e.g., AAPL, MSFT)."
+        tests:
+          - not_null
+      - name: moving_average_20
+        description: "20-day moving average of the stock's closing price."
+        tests:
+          - not_null
+      - name: moving_average_50
+        description: "50-day moving average of the stock's closing price."
+        tests:
+          - not_null
+      - name: rsi
+        description: "Relative Strength Index (RSI) for the stock."
+        tests:
+          - not_null
